@@ -2,6 +2,7 @@ package seedu.address.logic.commands;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.address.logic.commands.CommandTestUtil.assertCommandFailure;
 import static seedu.address.logic.commands.CommandTestUtil.assertCommandSuccess;
@@ -44,19 +45,33 @@ public class SetApplicationStatusCommandTest {
     }
 
     @Test
-    public void execute_sameStatus_succeeds() {
-        Application application = new Application(ALICE, new Job("Janitor"), Application.Status.PENDING);
+    public void execute_sameAcceptedStatus_reportsNoChanges() {
+        assertUnchangedStatus(Application.Status.ACCEPT, "accepted");
+    }
+
+    @Test
+    public void execute_sameRejectedStatus_reportsNoChanges() {
+        assertUnchangedStatus(Application.Status.REJECT, "rejected");
+    }
+
+    @Test
+    public void execute_samePendingStatus_reportsNoChanges() {
+        assertUnchangedStatus(Application.Status.PENDING, "set as pending");
+    }
+
+    private void assertUnchangedStatus(Application.Status status, String description) {
+        Application application = new Application(ALICE, new Job("Janitor"), status);
         model.addApplication(application);
         SetApplicationStatusCommand command = new SetApplicationStatusCommand(
-                INDEX_FIRST_PERSON, Application.Status.PENDING);
+                INDEX_FIRST_PERSON, status);
 
         Model expectedModel = new ModelManager(getTypicalAddressBook(), new UserPrefs());
         expectedModel.addApplication(application);
         CommandResult expectedResult = new CommandResult(String.format(
-                SetApplicationStatusCommand.MESSAGE_SUCCESS, ALICE.getName(), ALICE.getEmail(),
-                Application.Status.PENDING), ALICE);
+                "Applicant 1 has already been %s. No changes have been made.", description), ALICE);
 
         assertCommandSuccess(command, model, expectedResult, expectedModel);
+        assertSame(application, model.getApplication(ALICE).orElseThrow());
     }
 
     @Test

@@ -214,6 +214,7 @@ Format: `set INDEX -s STATUS`
 * Alias: `-status` for `-s`.
 * A successful command selects that applicant and shows the job and updated status in the detail panel.
 * An applicant who does not have an application cannot have a status set.
+* Setting the current status again succeeds with an "already been" message and makes no changes to the application.
 
 Examples:
 

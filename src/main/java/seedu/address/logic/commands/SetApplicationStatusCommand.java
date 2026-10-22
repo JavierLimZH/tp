@@ -24,6 +24,8 @@ public class SetApplicationStatusCommand extends Command {
     public static final String MESSAGE_MISSING_APPLICATION =
             "Failed to update application status: This applicant does not have an application.";
 
+    public static final String MESSAGE_UNCHANGED = "Applicant %1$d has already been %2$s. No changes have been made.";
+
     public static final String MESSAGE_INVALID_INDEX =
             "Invalid applicant index. Please enter an integer from 1 to %1$d.";
 
@@ -67,6 +69,15 @@ public class SetApplicationStatusCommand extends Command {
         Person applicant = lastShownList.get(targetIndex.getZeroBased());
         Application existing = model.getApplication(applicant)
                 .orElseThrow(() -> new CommandException(MESSAGE_MISSING_APPLICATION));
+        if (existing.getStatus() == status) {
+            String description = switch (status) {
+                case ACCEPT -> "accepted";
+                case REJECT -> "rejected";
+                case PENDING -> "set as pending";
+            };
+            return new CommandResult(String.format(MESSAGE_UNCHANGED,
+                    targetIndex.getOneBased(), description), applicant);
+        }
         Application updated = new Application(
                 existing.getApplicant(), existing.getJob(), status);
         model.setApplication(existing, updated);
