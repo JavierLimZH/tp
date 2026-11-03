@@ -31,9 +31,9 @@ public class ArgumentTokenizer {
     public static final boolean HAS_PREAMBLE = true;
     public static final boolean NO_PREAMBLE = false;
 
-    /** Recognizes option-like tokens in either case; alias lookup remains case-sensitive. */
-    private static final Pattern OPTION_TOKEN = Pattern.compile("(?<!\\S)(-[a-z]+(?:-[a-z]++)*+)(?=\\s|$)",
-            Pattern.CASE_INSENSITIVE);
+    /** Matches option boundaries using the same Java whitespace definition as {@link String#strip()}. */
+    private static final Pattern OPTION_TOKEN = Pattern.compile(
+            "(?<!\\P{javaWhitespace})(-[a-z]+(?:-[a-z]++)*+)(?=\\p{javaWhitespace}|$)", Pattern.CASE_INSENSITIVE);
 
     /**
      * Strictly tokenizes hyphen-prefixed command options according to {@code options}.
